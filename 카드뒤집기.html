@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>카드뒤집기</title>
+    <style>
+        body {
+            padding:0;
+            margin:0;
+            border:0;
+        }
+        .게임판 div{
+            border:1px solid black;
+            display: inline-block;
+            width:20%;
+            margin: 2%;
+            height:15vh;
+            background-color: gray;
+        }
+    </style>
+</head>
+<body>
+    <div class="게임판">
+    </div>
+    <script>
+        // 초기 변수 세팅
+        const 게임판 = document.querySelector('.게임판');
+        let 색깔들 = ['빨강','주황','노랑','초록','파랑','남색','보라',
+        '적색','검정','아이보리'];
+        let 선택횟수 = 0;
+        let 선택된색깔 = '';
+        let 선택된엘리먼트 = '';
+        let 이번색깔;
+        let 카드;
+        let 카드들 = [];
+        let 정답횟수 = 0;
+        let 오답횟수 = 0;
+        // 20개의 카드를 만듦
+        for(let i = 0; i < 2; i++) {
+            // 10번 반복하며 카드생성 랜덤색깔
+            for(let i = 0; i < 10; i++) {
+            카드 = document.createElement('div');
+            이번색깔 = 색깔들.splice([Math.ceil(Math.random() * (색깔들.length-1))],1);
+            카드들.push(카드);
+            // 이번에 나온 색깔비교
+            if(이번색깔[0] === '빨강') {
+                카드.classList.add('red');
+            }
+            if(이번색깔[0] === '주황') {
+                카드.classList.add('orange');
+            }
+            if(이번색깔[0] === '노랑') {
+                카드.classList.add('yellow');
+            }
+            if(이번색깔[0] === '초록') {
+                카드.classList.add('green');
+            }
+            if(이번색깔[0] === '파랑') {
+                카드.classList.add('blue');
+            }
+            if(이번색깔[0] === '남색') {
+                카드.classList.add('deepskyblue');
+            }
+            if(이번색깔[0] === '보라') {
+                카드.classList.add('purple');
+            }
+            if(이번색깔[0] === '적색') {
+                카드.classList.add('hotpink');
+            }
+            if(이번색깔[0] === '검정') {
+                카드.classList.add('black');
+            }
+            if(이번색깔[0] === '아이보리') {
+                카드.classList.add('lightgoldenrodyellow');
+            }
+            카드.style.backgroundColor = 카드.className;
+            // 카드에 클릭 이벤트 추가
+            카드.addEventListener('click',(e) => {
+                // 첫 타겟 클릭
+                if(선택횟수 === 0) {
+                    e.target.style.backgroundColor = e.target.classList.value;
+                    선택된색깔 = e.target.classList.value;
+                    선택된엘리먼트 = e.target;
+                    선택횟수++;
+                    // 같은 색깔을 뒤집은경우
+                } else if (e.target.classList.value === 선택된색깔) {
+                    e.target.style.backgroundColor = 선택된색깔;
+                    선택횟수 = 0;
+                    정답횟수++;
+                    // 모두 뒤집은경우
+                    if(정답횟수 === 10) {
+                        alert('모든 색깔을 맞추셨습니다!');
+                        location.href='';
+                    }
+                    // 다른 색깔을 뒤집은경우
+                } else {
+                    e.target.style.backgroundColor = e.target.classList.value;
+                    setTimeout(() => {
+                        선택된엘리먼트.style.backgroundColor = 'gray';
+                        e.target.style.backgroundColor = 'gray';
+                    },300);
+                    선택횟수 = 0;
+                    오답횟수++;
+                    if(오답횟수 === 10) {
+                        alert('실패!! 너무 많이 틀렸어요!');
+                        location.href='';
+                    }
+                }
+            });
+            게임판.appendChild(카드);
+        }
+        // 초기화작업
+        색깔들 = ['빨강','주황','노랑','초록','파랑','남색','보라',
+        '적색','검정','아이보리'];
+    }
+        setTimeout(() => {
+            for(let i = 0; i < 20; i++) {
+                카드들[i].style.backgroundColor = 'gray';
+            }
+        },1000)
+    </script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>로또추첨기</title>
+    <style>
+        #로또판 {
+            display: inline-block;
+            width:100%;
+        }
+        p {
+            display: none;
+            margin:4%;
+            border:1px solid black;
+            border-radius: 100%;
+            width:6%;
+            height:4vh;
+            text-align: center;
+            line-height: 4vh;
+            color:black;
+        }
+        body {
+            padding:0;
+            margin:0;
+            border:0;
+        }
+    </style>
+</head>
+<body>
+    <h1>로또추첨기</h1>
+    <div id="로또판"></div>
+    <div id="행운번호"></div>
+    <script>
+        // 처음세팅
+        const 로또판 = document.querySelector('#로또판');
+        const 행운번호 = document.getElementById('행운번호');
+        let 로또공들 = [];
+        let 로또번호들 = [];
+        // 7개의 로또공을 생성한다
+        for(let i = 0; i < 7; i++) {
+            let 랜덤번호 = Math.ceil(Math.random() * 99);
+            const 로또공 = document.createElement('p');
+            로또공.innerText = 랜덤번호;
+            로또번호들.push(랜덤번호);
+            // 로또공의 배경색 지정
+            if(i === 0) {
+                로또공.style.backgroundColor = 'red';
+                로또공.style.color = 'white';
+            } else if(i === 1) {
+                로또공.style.backgroundColor = 'orange';
+            } else if(i === 2) {
+                로또공.style.backgroundColor = 'yellow';
+            } else if(i ===3) {
+                로또공.style.backgroundColor = 'lightgreen';
+            } else if(i === 4) {
+                로또공.style.backgroundColor = 'skyblue';
+            } else if(i === 5) {
+                로또공.style.backgroundColor = 'hotpink';
+            } else if(i === 6) {
+                로또공.style.backgroundColor = 'purple';
+                로또공.style.color = 'white';
+            }
+            로또공들.push(로또공);
+            로또판.appendChild(로또공);
+        }
+        let i = 0;
+        const 로또볼공개 = setInterval(() => {
+            if(i === 6) {
+                clearInterval(로또볼공개);
+            }
+            로또공들[i].style.display = 'inline-block';
+            i++;
+        },1000);
+    </script>
+</body>
+</html>

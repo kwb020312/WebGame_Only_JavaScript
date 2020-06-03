@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>틱택토</title>
+    <style>
+        body {
+            padding:0;
+            margin:0;
+        }
+        table {
+            border-collapse: collapse;
+            width:100%;
+            height:100vh;
+        }
+        td {
+            font-size: 2rem;
+            text-align: center;
+            padding:0;
+            width:2rem;
+            height:10vh;
+        }
+    </style>
+</head>
+<body>
+    <table border="1">
+    </table>
+    <script>
+        // 초기변수세팅
+        const 테이블 = document.querySelector('table');
+        let 데이터 = [];
+        let 이번턴 = 'O';
+        let 몇번째턴 = 0;
+        // 화면과 같은 데이터구조를 잡고 HTML 구조를 만든다
+        for(let i = 0; i< 3; i++) {
+            let 데이터2 = [];
+            데이터.push(데이터2);
+            let tr = document.createElement('tr');
+            // 이중배열 및 td 의 이벤트리스너
+            for(let j = 0; j< 3; j++) {
+                데이터2.push(0);
+                let td = document.createElement('td');
+                td.addEventListener('click',(e) => {
+                    // 데이터 속 값이 0 이라면 이번턴 유저의 값을 넣음
+                    if(데이터[i][j] === 0) {
+                        데이터[i][j] = 이번턴;
+                        // 승리조건 배열을 위한 반복문
+                        for(let i = 0; i <= 2; i++) {
+                            // 가로 줄이 모두 같은턴의 사람인가?
+                            if(데이터[i][0] === 데이터[i][1] && 데이터[i][1] === 데이터[i][2]) {
+                                // 기본데이터로 같은것은 아닌가?
+                                if(데이터[i][0] !== 0) {
+                                    alert(이번턴+' 님 승리! (가로)');
+                                    location.href='';
+                                }
+                            }
+                            // 세로 줄이 모두 같은턴의 사람인가?
+                            if(데이터[0][i] === 데이터[1][i] && 데이터[1][i] === 데이터[2][i]) {
+                                // 기본데이터로 같은것은 아닌가?
+                                if(데이터[0][i] !== 0) {
+                                    alert(이번턴+' 님 승리! (세로)');
+                                    location.href='';
+                                }
+                            }
+                        }
+                        // 대각선 줄이 모두 같은턴의 사람인가?
+                        if(데이터[0][0] === 데이터[1][1] && 데이터[1][1] === 데이터[2][2]) {
+                            // 기본데이터로 같은것은 아닌가?
+                            if(데이터[0][0] !== 0) {
+                                alert(이번턴+' 님 승리! (대각선 오른아래)');
+                                location.href='';
+                            }
+                        }
+                        // 대각선 줄이 모두 같은턴의 사람인가?
+                        if(데이터[0][2] === 데이터[1][1] && 데이터[1][1] === 데이터[2][0]) {
+                            // 기본데이터로 같은것은 아닌가?
+                            if(데이터[2][0] !== 0) {
+                                alert(이번턴+' 님 승리! (대각선 왼쪽아래)');
+                                location.href='';
+                            }
+                        }
+                        // 아니면 리턴
+                    } else {
+                        return;
+                    }
+                    // 이번턴이 O 라면 X 로 X 라면 O 로
+                    (이번턴 === 'O')?(이번턴 = 'X'):(이번턴 = 'O');
+                    td.innerText = 데이터[i][j];
+                    // 턴이 지나 모두 꽉차는 9 번째 턴시 새로고침
+                    몇번째턴++;
+                    if(몇번째턴 === 9) {
+                        alert('창이 꽉 차버렸습니다 무승부!');
+                        location.href='';
+                    }
+                })
+                tr.appendChild(td);
+            }
+            테이블.appendChild(tr);
+        }
+    </script>
+</body>
+</html>

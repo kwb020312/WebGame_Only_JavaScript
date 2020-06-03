@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>숫자야구</title>
+</head>
+<body>
+    <h1>숫자 야구</h1>
+    <h1>숫자 4자리를 입력해주세요.</h1>
+    <div id="스트라이크볼"></div>
+    <input type="number" required maxlength="4">
+    <div id="제출"></div>
+    <script>
+        // 초기세팅
+        const 제출답 = document.querySelector('input');
+        const 스트라이크볼 = document.querySelector('#스트라이크볼');
+        const 제출 = document.getElementById('제출');
+        let 숫자배열 = [];
+        let 컴퓨터수 = [];
+        let 사용자답 = [];
+        let 스트라이크 = 0;
+        let 볼 = 0;
+        let 답;
+        const 시작 = () => {
+            // 1 ~ 9 까지의 숫자를 뽑아옴
+            for(let i = 1; i < 10 ; i++) {
+                숫자배열.push(i);
+            }
+            // 1 ~ 9 의 숫자배열 중 4개를 랜덤하게 뽑아옴
+            for(let i = 0; i < 4; i++) {
+                컴퓨터수.push(숫자배열.splice(Math.ceil(Math.random() * (숫자배열.length)-1 ),1));
+            }
+            // 컴퓨터수 출력
+            답 = `${컴퓨터수[0][0]}${컴퓨터수[1][0]}${컴퓨터수[2][0]}${컴퓨터수[3][0]}`;
+            console.log('답 :',답);
+        }
+        // 첫 시작
+        시작();
+        // 제출답에서 키를 눌렀을 때
+        제출답.addEventListener('keydown',(e) => {
+            // 4자리 이상 입력불가
+            if(제출답.value.length > 4) {
+                let 제출제한 = 제출답.value.slice(0,3);
+                제출답.value = 제출제한;
+            }
+            // 제출답에서 Enter 키 를 눌렀을 때
+            if(e.key === 'Enter') {
+                // 4스트라이크 인 경우
+                if(제출답.value === 답) {
+                    alert('4스트라이크 성공! 답: '+답);
+                    location.href='';
+                // 4스트라이크가 아닌경우 볼 스트라이크 수 표시
+                } else {
+                    // 사용자 답 각각으로 나누어 배열에 담기 
+                    for(let i = 0; i < 4; i++) {
+                        사용자답.push(Number(제출답.value.slice(i,i+1)));    
+                    }
+                    // 각 배열당 스트라이크 볼 비교
+                    let i =0 ;
+                    let j =0;
+                    while(1) {
+                        // 만약 i 가 배열수  4를 넘었다면 break
+                        if( i === 4) {
+                            break;
+                        } else {
+                            // 사용자 답과 컴퓨터수 배열의 답 비교과정
+                            if(사용자답[i] === 컴퓨터수[i][0]) {
+                                스트라이크++;  
+                            } else {
+                                // 볼체크
+                                while(1) {
+                                if( j === 4) {
+                                    j=0;
+                                    break;
+                                } else {
+                                    // 볼 비교과정
+                                    if(사용자답[i] === 컴퓨터수[j][0]) {
+                                        볼++;
+                                    }
+                                }
+                                j++;
+                                }
+                            }
+                            
+                            i++;
+                        }
+                    }
+                    // 답 제출시 확인용 P 
+                    스트라이크볼.innerText = `${제출답.value} =  스트라이크 : ${스트라이크}  볼 :  ${볼}`;
+                    let 제출P = document.createElement('p');
+                    제출P.innerText = `${제출답.value} =  스트라이크 : ${스트라이크}  볼 :  ${볼}`;
+                    제출.appendChild(제출P);
+                    // 10번넘게 실패의경우
+                    if(제출.children.length === 10) {
+                        alert('횟수초과 실패!!');
+                        location.href='';
+                    }
+                    사용자답 = [];
+                    스트라이크 = 0;
+                    볼 = 0;
+                    제출답.value = '';
+                    제출답.focus();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

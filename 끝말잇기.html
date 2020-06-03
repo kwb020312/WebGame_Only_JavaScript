@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>끝말잇기</title>
+</head>
+<body>
+    <!-- 끝말잇기 필요 HTML -->
+    <h1>끝말잇기 시작!</h1>
+    <h2>시작단어</h2>
+    <input disabled type="text">
+    <button>시작하기!</button>
+    <div></div>
+    <script>
+        const 시작단어 = ['사자','코끼리','기린','나팔','다람쥐','라면',
+        '마그마','바지','사진','아기','자신','차표','카드','타인',
+        '파자마','하마'];
+        const 답목록 = document.querySelector('div');
+        const 입력버튼 = document.querySelector('button');
+        const 입력단어 = document.querySelector('input');
+        const 단어칸 = document.querySelector('h2');
+        let 답목록배열 = [];
+        let 정답횟수 = 0;
+        // 입력버튼을 눌렀을 때
+        입력버튼.addEventListener('click', () => {
+            // 입력버튼의 값이 시작 일 경우
+            if(입력버튼.innerText === '시작하기!') {
+                // 시작단어 중 하나를 첫 단어로 뽑아옴
+                단어칸.innerText = 시작단어[Math.floor(Math.random() * 시작단어.length)];
+                입력버튼.innerText = '입력하기';
+                입력단어.disabled = false;
+                입력단어.focus();
+            } else {
+                // 입력버튼 값이 시작 이 아닐경우
+                if(단어칸.innerText.slice(-1) === 입력단어.value.slice(0,1)) {
+                    단어칸.innerText = 입력단어.value;
+                    답목록배열.push(단어칸.innerText);
+                    let 답추가 = 답목록배열[0];
+                    let 답P = document.createElement('p');
+                    답P.innerText = 답추가;
+                    답목록.appendChild(답P);
+                    답목록배열 = [];
+                    입력단어.value = '';
+                    입력단어.focus();
+                    정답횟수++;
+                    if(정답횟수 === 10) {
+                        alert('당신은 끝말잇기 왕!');
+                    }
+                } else {
+                    // 잘못된 단어를 말한경우
+                    console.log('잘못된 답안');
+                    입력단어.value = '';
+                    입력단어.focus();
+                }
+            }
+        })
+        // input 태그에서 키를 눌렀을경우
+        입력단어.addEventListener('keydown',(e) => {
+            // 엔터 키 인 경우
+            if(e.key === 'Enter') {
+                if(단어칸.innerText.slice(-1) === 입력단어.value.slice(0,1)) {
+                    단어칸.innerText = 입력단어.value;
+                    답목록배열.push(단어칸.innerText);
+                    let 답추가 = 답목록배열[0];
+                    let 답P = document.createElement('p');
+                    답P.innerText = 답추가;
+                    답목록.appendChild(답P);
+                    답목록배열 = [];
+                    입력단어.value = '';
+                    입력단어.focus();
+                    정답횟수++;
+                    if(정답횟수 === 10) {
+                        alert('당신은 끝말잇기 왕!');
+                    }
+                } else {
+                    // 잘못된 단어를 말한경우
+                    console.log('잘못된 답안');
+                    입력단어.value = '';
+                    입력단어.focus();
+                }
+            } else {
+                return;
+            }
+        })
+    </script>
+</body>
+</html>

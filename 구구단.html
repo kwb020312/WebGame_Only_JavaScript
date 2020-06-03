@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>구구단</title>
+    <style>
+        body {
+            margin:0;
+            padding:0;
+            border:0;
+        }
+        h1 {
+            display: inline-block;
+        }
+        input {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="첫번째"></h1>
+    <h1>  *  </h1>
+    <h1 id="두번째"></h1>
+    <h1>  =  </h1>
+    <h1 id="답"></h1>
+    <input type="text">
+    <div></div>
+    <script>
+        // 초기세팅 변수입력
+        const 답저장칸 = document.querySelector('div');
+        const 첫번째 = document.querySelector('#첫번째');
+        const 두번째 = document.querySelector('#두번째');
+        const 답 = document.querySelector('#답');
+        const 답입력칸 = document.querySelector('input');
+        let 첫째자리;
+        let 둘째자리;
+        let 정답횟수 = 0;
+        // 문제를 내는 로직
+        const 문제내기 = () => {
+            첫째자리 = Math.ceil(Math.random() * 9);
+            둘째자리 = Math.ceil(Math.random() * 9);
+            첫번째.innerText = 첫째자리;
+            두번째.innerText = 둘째자리;
+        }
+        // 첫 문제를 내고 시작
+        문제내기();
+        // 답입력칸 에서 엔터 키를 눌렀을경우
+        답입력칸.addEventListener('keydown',(e) => {
+            if(e.key === 'Enter') {
+                // 정답인가??
+                if(Number(답입력칸.value) === 첫째자리*둘째자리) {
+                    if(정답횟수 === 5) {
+                        alert('승리!!');
+                    }
+                    let 답저장용 = document.createElement('p');
+                    답저장용.innerText = 첫째자리+' * '+둘째자리+' = '+첫째자리*둘째자리;
+                    답저장칸.appendChild(답저장용);
+                    답입력칸.value = '';
+                    답입력칸.focus();
+                    정답횟수++;
+                    문제내기();
+                    // 오답이라면??
+                } else {
+                    alert('오답!');
+                    location.href='';
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

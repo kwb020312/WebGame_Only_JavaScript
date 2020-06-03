@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>테트리스</title>
+    <style>
+        body {
+            padding:0;
+            margin:0;
+        }
+        table {
+            border-collapse: collapse;
+            width:99%;
+            height:99vh;
+        }
+        td {
+            text-align: center;
+            border:1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <table>
+
+    </table>
+    <script>
+        // 초기 변수세팅
+        const 블록들 = [
+            // ㅁ
+            [[[1,1],[1,1]],'red',true],
+            // ㄹ
+            [[[0,2,2],[2,2,0]],'orange',true],
+            // ㄹ
+            [[[3,3,0],[0,3,3]],'yellow',true],
+            // ㄱ
+            [[[4,4,4],[0,0,4]],'lightgreen',true],
+            // ㄱ
+            [[[5,5,5],[5,0,0]],'lightblue',true],
+            // ㅡ
+            [[[6,6,6,6]],'gold',true],
+            // ㅗ
+            [[[0,7,0],[7,7,7]],'hotpink',true],
+        ]
+        let 새로뽑기 = false;
+        let 멈추기 = false;
+        let 뽑힌블록;
+        let k = 0;
+        const body = document.querySelector('body');
+        const 테이블 = document.querySelector('table');
+        // 맵데이터를 만들어서 배열에 넣음
+        let 맵데이터 = [];
+        for(let i = 0; i < 20; i++) {
+            let 맵추가배열 = [];
+            for(let j = 0 ; j < 10; j++) {
+                맵추가배열.push(0);
+            }
+            맵데이터.push(맵추가배열);
+        }
+        // 블록을 생성함
+        for(let i = 0 ; i < 20 ; i ++) {
+            const 줄 = document.createElement('tr');
+            줄.classList.add('줄들');
+            for(let j = 0 ; j < 10 ; j ++) {
+                const 칸 = document.createElement('td');
+                칸.classList.add('칸들');
+                줄.appendChild(칸);
+                테이블.appendChild(줄);
+            }
+        }
+        // 데이터와 화면을 일치시킴
+        const 데이터표시하기 = () => {
+            for(let i = 0 ; i < 20 ; i ++) {
+                for(let j = 0 ; j < 10 ; j ++) {
+                    // 데이터와 UI 색으로 일치시키기
+                    switch(맵데이터[i][j]) {
+                        case 1 :
+                            줄들[i].children[j].style.backgroundColor = 'red';
+                            break;
+                        case 2 :
+                            줄들[i].children[j].style.backgroundColor = 'orange';
+                            break;
+                        case 3 :
+                            줄들[i].children[j].style.backgroundColor = 'yellow';
+                            break;
+                        case 4 :
+                            줄들[i].children[j].style.backgroundColor = 'lightgreen';
+                            break;
+                        case 5 :
+                            줄들[i].children[j].style.backgroundColor = 'skyblue';
+                            break;
+                        case 6 :
+                            줄들[i].children[j].style.backgroundColor = 'hotpink';
+                            break;
+                        case 7 :
+                            줄들[i].children[j].style.backgroundColor = 'gold';
+                            break;
+                        default :
+                            줄들[i].children[j].style.backgroundColor = 'white';
+                            break;
+                    }
+                }
+            }
+        }
+        const 블록뽑기 = () => {
+            // 랜덤한 블록을 뽑아서 배열에 넣음
+            뽑힌블록 = 블록들[Math.floor(Math.random() * 블록들.length)][0];
+            // 가로 4칸짜리 블럭이라면
+            if(뽑힌블록[0].length === 4) {
+                맵데이터[0][3] = 6;            
+                맵데이터[0][4] = 6;
+                맵데이터[0][5] = 6;
+                맵데이터[0][6] = 6;
+            } else {
+                // 나머지 블럭들이라면
+                for(let i = 0 ; i < 2 ; i ++) {
+                    for(let j = 0 ; j < 4; j ++) {
+                        if(뽑힌블록[i][j] !== undefined) {
+                            맵데이터[i][j+4] = 뽑힌블록[i][j];
+                        }
+                    }
+                }   
+            }
+            데이터표시하기();
+        }
+        // 줄들 과 칸들을 가져옴
+        let 줄들 = document.getElementsByClassName('줄들');
+        let 칸들 = document.getElementsByClassName('칸들');
+        const 블록내리기 = () => {
+            for(let i = 19; i >= 0 ; i --) {
+                for(let j = 9 ; j >= 0 ; j --) {
+                    if(맵데이터[i][j] !== 0) {
+                        // 만약 끝까지 내려갔다면??
+                        if(맵데이터[i+1] && 멈추기 === false) {
+                            맵데이터[i+1][j] = 맵데이터[i][j];
+                            맵데이터[i][j] = 0;
+                        } else {
+                            멈추기 = true;
+                        }
+                    }
+                }
+            }
+            데이터표시하기();
+            멈추기 = false;
+        }
+        // 시작 블록뽑기
+        블록뽑기();
+        // 1초 지날 때 마다 1칸씩 내려옴
+        // 성공 땅에 닿았을 때의 에러처리 해주면 됨
+        const 계속내리기 = setInterval(() => {
+            블록내리기();
+        },100);
+        
+        window.addEventListener('keydown',(e) => {
+            console.log(e.key);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>하스스톤</title>
+    <style>
+        .영웅 {
+            border:1px solid black;
+            width:20%;
+            height:15vh;
+            border-radius: 100%;
+            display: inline-block;
+        }
+        body {
+            margin:0;
+            padding:0;
+        }
+        .몬스터칸 {
+            width:98%;
+            height:30vh;
+            border:1px solid black;
+        }
+        .몬스터카드 {
+            width:15%;
+            height:14vh;
+            border:1px solid black;
+            display: inline-block;
+            text-align: center;
+        }
+        .몬스터카드.선택됨 {
+            border:1px solid red;
+        }
+        .몬스터체력 {
+            transform: translateX(15%) translateY(360%);
+            border-radius: 100%;
+            border:1px solid red;
+            background-color:red;
+            width:28%;
+            color:white;
+            margin:0;
+        }
+        .몬스터공격력 {
+            transform: translateX(205%) translateY(260%);
+            border-radius: 100%;
+            border:1px solid yellow;
+            background-color:yellow;
+            width:28%;
+            color:black;
+            margin:0;
+        }
+        .몬스터코스트 {
+            transform: translateX(115%) translateY(-200%);
+            border-radius: 100%;
+            border:1px solid blue;
+            background-color: blue;
+            width:28%;
+            color:white;
+            margin:0;
+        }
+        .필드 {
+            display: inline-block;
+            width:98%;
+            height:15vh;
+        }
+        .영웅 {
+            text-align: center; 
+            transform: translateX(200%);
+        }
+        .체력 {
+            transform: translateX(55%) translateY(185%);
+            border-radius: 100%;
+            border:1px solid red;
+            background-color:red;
+            width:22%;
+            color:white;
+            margin:0;
+        }
+        .공격불가 {
+            background-color: gray;
+        }
+        .공격력 {
+            transform: translateX(265%) translateY(80%);
+            border-radius: 100%;
+            border:1px solid yellow;
+            background-color:yellow;
+            width:22%;
+            color:black;
+            margin:0;
+        }
+    </style>
+</head>
+<body>
+    <div id="상대영웅" class="영웅">
+        <p>상대영웅</p>
+        <p id="상대영웅체력" class="체력">30</p>
+        <p id="상대영웅공격력" class="공격력">1</p>
+    </div>
+    <div id="상대필드" class="필드"></div>
+    <hr><button id="준비완료">준비완료</button>
+    <div id="내몬스터들" class="몬스터칸"></div>
+    <div id="내코스트"></div>
+    <div id="내필드" class="필드"></div>
+    <div id="내영웅" class="영웅">
+        <p>내영웅</p>
+        <p id="내영웅체력" class="체력">30</p>
+        <p id="내영웅공격력" class="공격력">1</p>
+    </div>
+    <script>
+        // 초기변수세팅
+        let 내영웅체력 = document.getElementById('내영웅체력');
+        let 상대영웅체력 = document.getElementById('상대영웅체력');
+        let 내몬스터들 = document.getElementById('내몬스터들');
+        const 상대영웅 = document.querySelector('#상대영웅');
+        const 내영웅 = document.querySelector('#내영웅');
+        const 내코스트칸 = document.getElementById('내코스트');
+        const 나의필드 = document.getElementById('내필드');
+        const 상대필드 = document.getElementById('상대필드');
+        const 준비버튼 = document.getElementById('준비완료');
+        let 몬스터;
+        let 이번턴 = '';
+        let 내필드 = [];
+        let 덱 = []
+        let 선택수 = 0;
+        let 선택된유닛 = [];
+        let 몬스터이름 = ['김우빈','문서준','김영훈','임효상','이지한','조건호',
+        '황순성','조원석','정명철','진상훈'];
+        let 몬스터랜덤순서이름 = [];
+        let 내코스트 = 10;
+        // 덱 만들기
+        const 덱만들기 = (이름,체력,공격력) => {
+            몬스터.이름 = 이름,
+            몬스터.체력 = 체력,
+            몬스터.공격력 = 공격력
+        }
+        
+        // 몬스터모음칸에서 클릭 시 내필드로 이동
+        const 내필드구현 = (사람이름,e) => {
+            if(e.target.innerText[0]+e.target.innerText[1]+e.target.innerText[2] === 사람이름) {
+                for(let i = 0 ; i < 덱.length ; i++) {
+                    if(덱[i].이름 === 사람이름) {
+                        내필드.push(덱.splice(i,1));
+                        내몬스터들.children[i].remove();
+                    }
+                    내몬스터들.children[i]
+                }
+                // UI 몬스터 체력 공격력을 구현한다
+                if(선택수 > 내필드.length) {
+                    return
+                }
+                몬스터체력 = 내필드[선택수][0].체력;
+                몬스터카드체력 = document.createElement('p');
+                몬스터카드체력.innerText = 몬스터체력;
+                몬스터카드체력.classList.add('몬스터체력');
+                몬스터공격력 = 내필드[선택수][0].공격력;
+                몬스터카드공격력 = document.createElement('p');
+                몬스터카드공격력.innerText = 몬스터공격력;
+                몬스터카드공격력.classList.add('몬스터공격력');
+                몬스터카드코스트 = document.createElement('p');
+                몬스터카드코스트.innerText = Math.ceil((몬스터공격력+몬스터체력)/2);
+                몬스터카드코스트.classList.add('몬스터코스트');
+                몬스터카드 = document.createElement('div');
+                몬스터카드.innerText = 내필드[선택수][0].이름
+                몬스터카드.classList.add('몬스터카드');
+                몬스터카드.appendChild(몬스터카드체력);
+                몬스터카드.appendChild(몬스터카드공격력);
+                몬스터카드.appendChild(몬스터카드코스트);
+                // 상점에서 구입한 카드의 클릭시
+                몬스터카드.addEventListener('click',(e) => {
+                    // 준비상태일 때 의 클릭
+                    if(준비버튼.innerText === '준비완료') {
+                        return;
+                    } else {
+                        // 공격상태일 때 의 클릭
+                        // 공격을 이미 한 상태가 아니라면
+                        if(e.toElement.classList.length !== 2) {
+                            선택된유닛.push(e.target);
+                            e.target.classList.add('선택됨');
+                        } else {
+                            return;
+                        }
+                        
+                        if(선택된유닛.length === 2) {
+                            선택된유닛[0].classList.remove('선택됨');
+                            선택된유닛.splice(0,1);
+                        }
+                    }
+                })
+                나의필드.appendChild(몬스터카드);
+                선택수++;
+            }
+        }
+        const 상대필드구현 = () => {
+            // 덱에서 남은 몬스터중 N개를 뽑아서 상대 필드에 세팅
+            let 상대필드몬스터 = 덱.splice([Math.floor(Math.random() * 덱.length)],1)[0];
+            let 상대필드몬스터이름 = 상대필드몬스터.이름;
+            // 상대 몬스터 체력 관련
+            let 상대필드몬스터체력 = 상대필드몬스터.체력;
+            let 상대몬스터체력 = document.createElement('p');
+            상대몬스터체력.innerText = 상대필드몬스터체력;
+            상대몬스터체력.classList.add('몬스터체력');
+            // 상대 몬스터 공격력 관련
+            let 상대필드몬스터공격력 = 상대필드몬스터.공격력;
+            let 상대몬스터공격력 = document.createElement('p');
+            상대몬스터공격력.innerText = 상대필드몬스터공격력;
+            상대몬스터공격력.classList.add('몬스터공격력');
+
+            // div이름 상대몬스터카드
+            let 상대몬스터카드 = document.createElement('div');
+            상대몬스터카드.innerText = 상대필드몬스터이름;
+            상대몬스터카드.classList.add('몬스터카드');
+
+            // 상대몬스터카드 에 appendchild
+            상대몬스터카드.appendChild(상대몬스터체력);
+            상대몬스터카드.appendChild(상대몬스터공격력);
+
+            // 상대몬스터카드를 공격했을 시
+
+            상대몬스터카드.addEventListener('click',(e) => {
+                // 선택된 유닛과 공격받은 유닛 체력 공격력 수집
+                if(선택된유닛[0]) {
+                    let 공격한유닛체력 = Number(선택된유닛[0].children[0].innerText);
+                    let 공격한유닛공격력 = Number(선택된유닛[0].children[1].innerText);
+                    let 내유닛체력 = Number(e.target.children[0].innerText);
+                    let 내유닛공격력 = Number(e.target.children[1].innerText);
+                    // 데미지계산
+                    공격한유닛체력 = 공격한유닛체력 - 내유닛공격력;
+                    선택된유닛[0].children[0].innerText = 공격한유닛체력;
+                    내유닛체력 = 내유닛체력 - 공격한유닛공격력;
+                    e.target.children[0].innerText = 내유닛체력;
+                    // 동시에 파괴된경우
+                    if(내유닛체력 <= 0 && 공격한유닛체력 <= 0) {
+                        e.target.remove();
+                        선택된유닛[0].remove();
+                        // 내유닛이 파괴된경우
+                    } else if(내유닛체력 <= 0) {
+                        e.target.remove();
+                        // 공격한유닛이 파괴된경우
+                    } else if(공격한유닛체력 <= 0) {
+                        선택된유닛[0].remove();
+                    }
+                    선택된유닛[0].classList.add('공격불가');
+                    선택된유닛[0].classList.remove('선택됨');
+                    선택된유닛 = [];
+                } else {
+                    return;
+                }
+                
+                // 내유닛이 파괴되지 않은 경우 상대영웅에게 공격
+                if(내필드.length === 0) {
+                    let 내체력 = Number(내영웅체력.innerText) - (내유닛공격력);
+                    내영웅체력.innerText = 내체력;
+                    // 내영웅체력이 0 인 경우 패배
+                    if(내체력 <= 0) {
+                        alert('패배!!');
+                    }
+                }
+            });
+            // 상대 영웅을 공격했을 시
+            상대영웅.addEventListener('click',() => {
+                if(선택된유닛[0]) {
+                    // 상대영웅의 공격력만큼 선택유닛 체력에서 제외
+                    let 상대영웅체력 = Number(상대영웅.children[1].innerText);
+                    let 선택유닛체력 = Number(선택된유닛[0].children[0].innerText);
+                    let 선택유닛공격력 = Number(선택된유닛[0].children[1].innerText);
+                    선택유닛체력 = 선택유닛체력-1;
+                    상대영웅체력 = 상대영웅체력 - 선택유닛공격력;
+                    상대영웅.children[1].innerText = 상대영웅체력;
+                    // 상대영웅을 파괴한 경우
+                    if(상대영웅체력 <= 0) {
+                        alert('승리');
+                        location.href='';
+                    }
+                    // 유닛이 공격 후 체력이 다 닳을경우 파괴
+                    if(선택유닛체력 <= 0) {
+                        선택된유닛[0].remove();
+                    }
+                    선택된유닛[0].children[0].innerText = 선택유닛체력;
+                    
+                    // 공격 후 데미지계산 후에는 선택취소
+                    선택된유닛[0].classList.add('공격불가');
+                    선택된유닛[0].classList.remove('선택됨');
+                    선택된유닛 = [];
+                } else {
+                    return;
+                }
+            });
+
+            상대필드.appendChild(상대몬스터카드);
+        }
+        let 몬스터체력;
+        let 몬스터카드체력;
+        let 몬스터공격력;
+        let 몬스터카드공격력;
+        let 몬스터카드코스트;
+        let 몬스터카드;
+        // 반복문으로 10개의 카드 만들기
+        const 카드새로뽑기 = () => {
+            for(let i = 0; i< 10; i++) {
+            몬스터 = {
+                이름 : '',
+                체력 : '',
+                공격력 : ''
+            };
+            // 몬스터 랜덤순서이름 이라는 변수에 몬스터이름의 랜덤 배열을 삽입한다
+            몬스터랜덤순서이름.push(몬스터이름.splice(Math.floor(Math.random() * 몬스터이름.length),1));
+            let 이름 = 몬스터랜덤순서이름[i][0];
+            let 체력 = Math.ceil(Math.random() * 10);
+            let 공격력 = Math.ceil(Math.random() * 10);
+            // 이름 체력 공격력 변수를 이용해 덱에 몬스터를 하나 씩 추가한다
+            덱만들기(이름,체력,공격력);
+            덱.push(몬스터);
+            // 상점 구매창을 만듦
+            // UI 몬스터 체력 공격력을 구현한다
+            몬스터체력 = 덱[i].체력;
+            몬스터카드체력 = document.createElement('p');
+            몬스터카드체력.innerText = 몬스터체력;
+            몬스터카드체력.classList.add('몬스터체력');
+            몬스터공격력 = 덱[i].공격력;
+            몬스터카드공격력 = document.createElement('p');
+            몬스터카드공격력.innerText = 몬스터공격력;
+            몬스터카드공격력.classList.add('몬스터공격력');
+            몬스터카드코스트 = document.createElement('p');
+            몬스터카드코스트.innerText = Math.ceil((몬스터공격력+몬스터체력)/2);
+            몬스터카드코스트.classList.add('몬스터코스트');
+            몬스터카드 = document.createElement('div');
+            몬스터카드.innerText = 덱[i].이름
+            몬스터카드.classList.add('몬스터카드');
+            몬스터카드.appendChild(몬스터카드체력);
+            몬스터카드.appendChild(몬스터카드공격력);
+            몬스터카드.appendChild(몬스터카드코스트);
+            내몬스터들.appendChild(몬스터카드);
+            // 준비버튼 클릭 이벤트
+            // 상점카드 클릭시 선택모드
+            몬스터카드.addEventListener('click',(e) => {
+                // 선택시 카드의 코스트만큼 내 코스트에서 뺌
+                if(e.target.innerText.length < 3) {
+                    return;
+                }
+                if(내코스트 - Number(e.srcElement.children[2].innerText) > -1) {
+                    내코스트 = 내코스트 - Number(e.srcElement.children[2].innerText);
+                    내코스트칸.innerText = '내 코스트 :  '+ 내코스트;
+                    // 여기 내필드구현 함수 붙여넣기
+                    for(let i = 0; i < 몬스터랜덤순서이름.length ; i++) {
+                        내필드구현(몬스터랜덤순서이름[i][0],e);
+                    }
+                } else {
+                    alert('코스트가 부족합니다!');
+                    return;
+                }
+            });
+        }
+        }
+        카드새로뽑기();
+        let 준비상태 = true;
+        준비버튼.addEventListener('click',() => {
+            // 준비완료 눌렀을 때
+            if(준비상태) {
+                if(덱.length === 0) {
+                    카드새로뽑기();
+                }
+                // 상대필드 세팅
+                상대필드구현();
+                // 내몬스터들의 배열안에 있는 모든 인자를 잠시 제거
+                for(let i = 0 ; i < 덱.length+1 ; i ++) {
+                    내몬스터들.children[0].remove();
+                }
+                준비버튼.innerText = '턴엔드';
+                준비상태 = false;
+                // 턴엔드 눌렀을 때
+            } else {
+                // 상대 필드위의 몬스터 공격력 만큼 내 영웅에게 데미지
+                for(let i = 0 ; i < 상대필드.children.length ; i ++) {
+                    let 데미지 = Number(상대필드.children[i].children[1].innerText);
+                    let 내영웅체력 = Number(내영웅.children[1].innerText);
+                    내영웅체력 = 내영웅체력 - 데미지;
+                    내영웅.children[1].innerText = 내영웅체력;
+                    
+                }
+                if(내영웅.children[1].innerText <= 0 ) {
+                    alert('내영웅 사망 패배!!');
+                    location.href='';
+                }
+                
+                // 선택제거 공격불가 제거
+                if(선택된유닛[0]) {
+                    선택된유닛[0].classList.remove('선택됨');
+                    선택된유닛[0].classList.remove('공격불가');
+                }
+                for(let i = 0 ; i < 나의필드.children.length ; i ++) {
+                    나의필드.children[i].classList.remove('공격불가');
+                }
+                선택된유닛 = [];
+                // 다시 유닛을 상점에 추가해줌
+                for(let i = 0 ; i < 덱.length ; i ++) {
+                    몬스터체력 = 덱[i].체력;
+                    몬스터카드체력 = document.createElement('p');
+                    몬스터카드체력.innerText = 몬스터체력;
+                    몬스터카드체력.classList.add('몬스터체력');
+                    몬스터공격력 = 덱[i].공격력;
+                    몬스터카드공격력 = document.createElement('p');
+                    몬스터카드공격력.innerText = 몬스터공격력;
+                    몬스터카드공격력.classList.add('몬스터공격력');
+                    몬스터카드코스트 = document.createElement('p');
+                    몬스터카드코스트.innerText = Math.ceil((몬스터공격력+몬스터체력)/2);
+                    몬스터카드코스트.classList.add('몬스터코스트');
+                    몬스터카드 = document.createElement('div');
+                    몬스터카드.innerText = 덱[i].이름
+                    몬스터카드.classList.add('몬스터카드');
+                    몬스터카드.appendChild(몬스터카드체력);
+                    몬스터카드.appendChild(몬스터카드공격력);
+                    몬스터카드.appendChild(몬스터카드코스트);
+                    내몬스터들.appendChild(몬스터카드);
+                    // 상점카드 클릭시 선택모드
+                    몬스터카드.addEventListener('click',(e) => {
+                        // 선택시 카드의 코스트만큼 내 코스트에서 뺌
+                        if(e.target.innerText.length < 3) {
+                            return;
+                        }
+                        if(내코스트 - Number(e.srcElement.children[2].innerText) > -1) {
+                            내코스트 = 내코스트 - Number(e.srcElement.children[2].innerText);
+                            내코스트칸.innerText = '내 코스트 :  '+ 내코스트;
+                            // 여기 내필드구현 함수 붙여넣기
+                            for(let i = 0; i < 몬스터랜덤순서이름.length ; i++) {
+                                내필드구현(몬스터랜덤순서이름[i][0],e);
+                            }
+                        } else {
+                            alert('코스트가 부족합니다!');
+                            return;
+                        }
+                    });
+                }
+                
+                준비버튼.innerText = '준비완료';
+                준비상태 = true;
+                내코스트 = 10;
+                내코스트칸.innerText = '내 코스트 :  '+ 내코스트;
+            }
+        })
+        내코스트칸.innerText = '내 코스트 :  '+ 내코스트;
+        console.log(덱);
+    </script>
+</body>
+</html>

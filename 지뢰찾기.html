@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>지뢰찾기</title>
+    <style>
+        body {
+            margin:0;
+            padding:0;
+            border:0;
+        }
+        table {
+            border:1px solid black;
+            border-collapse: collapse;
+            width:100%;
+            height:70vh;
+        }
+        td {
+            border:1px solid black;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 100;
+            width:5%;
+        }
+        input {
+            padding:0;
+            margin:0;
+            width:10%;
+        }
+        .칸들 {
+            background-color: rgb(72, 194, 235);
+        }
+        .대기 {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="세팅칸">
+        <input onchange="가로변경(value)" id="가로" type="number" value="10" name="가로" placeholder="가로"> X
+        <input onchange="세로변경(value)" id="세로" type="number" value="10" name="세로" placeholder="세로"> : 
+        <input onchange="지뢰변경(value)" id="지뢰" type="number" value="10" name="지뢰" placeholder="지뢰">
+        <button onclick="게임시작(!시작상태)" id="시작버튼">게임시작!</button>
+    </div>
+    <div id="게임판">
+
+    </div>
+    <script>
+        // 게임 시작 전 세팅
+        const 게임판 = document.querySelector('#게임판');
+        let 가로 = document.querySelector('#가로').value;
+        let 세로 = document.querySelector('#세로').value;
+        let 지뢰 = document.querySelector('#지뢰').value;
+        let 지뢰카운트 = 0;
+        let 정답카운트 = 0;
+        let 칸들 = [] ;
+        let 지뢰뽑기 = [];
+        let 십의자리 = [];
+        let 일의자리 = [];
+        let 주변지뢰 = 0;
+        const 시작버튼 = document.getElementById('시작버튼');
+        const 바디 = document.querySelector('body');
+        let 시작상태 = false;
+        // 테이블 생성
+        const 테이블 = document.createElement('table');
+        // 게임 시작!
+        const 게임시작 = (전원) => {   
+            if(전원) {
+                // 시작할 때 데이터 칸 생성
+                for(let i = 0; i<세로; i++) {
+                    let 칸들2 = [];
+                    칸들.push(칸들2);
+                    for(let j = 0; j< 가로 ; j++) {
+                        칸들2.push(0);
+                    }
+                }
+                // 지뢰 랜덤심기
+                for(let i =0; i < 지뢰 ; i ++) {
+                    지뢰뽑기.push(Math.floor(Math.random() * (가로 * 세로)));
+                }
+                // 지뢰 자릿수 추출
+
+                for(let i = 0 ; i < 지뢰뽑기.length; i++) {
+                    // 십의자리 추출
+                    십의자리.push( Math.floor(지뢰뽑기[i]/10)); 
+                    // 일의자리 추출
+                    일의자리.push( Math.floor(((지뢰뽑기[i]/10) - Math.floor(지뢰뽑기[i]/10)) * 10));
+                    // 폭탄심기
+                    if(일의자리[i] <= 1) {
+                        // 십의자리 추출
+                        let 잘못뽑은십의자리 = Math.floor(지뢰뽑기[i]/10); 
+                        // 일의자리 추출
+                        let 잘못뽑은일의자리 = Math.floor(((지뢰뽑기[i]/10) - Math.floor(지뢰뽑기[i]/10)) * 10);
+                        칸들[잘못뽑은십의자리][잘못뽑은일의자리] = 'X';
+                    } else {
+                        칸들[십의자리[i]][일의자리[i]-1] = 'X';
+                    }
+                }
+                console.log(칸들);
+                // 시작할 때 UI 칸 생성
+                for(let i = 0; i<세로; i++) {
+                    var 줄 = document.createElement('tr');
+                    for(let j = 0 ; j<가로; j++) {
+                        const 칸 = document.createElement('td');
+                        칸.classList.add(i+''+j);
+                        // 클릭할 때
+                        칸.addEventListener('click',(e) => {
+                            // 지뢰를 밟았을 때
+                            if(칸들[i][j] === "X") {
+                                alert('펑!');
+                                location.href='';
+                                // 정상인 곳을 밟았을 때
+                            } else if(칸들[i][j] === 0) {
+                                칸들[i][j] = 1;
+                                e.target.style.backgroundColor = 'white';
+                                //  ||  ||  ||  ||  ||  ||  ||
+                                // 블록이 맨 위인경우 
+                                if(i === 0) {
+                                if(칸들[i+1][j] === "X") {
+                                    주변지뢰++;
+                                    e.target.innerText = 주변지뢰;   
+                                }
+                                if(칸들[i][j+1] === "X") {
+                                    주변지뢰++;
+                                    e.target.innerText = 주변지뢰;   
+                                }
+                                if(칸들[i+1][j+1] === "X") {
+                                    주변지뢰++;
+                                    e.target.innerText = 주변지뢰;   
+                                }
+                                if(칸들[i][j-1] === "X") {
+                                    주변지뢰++;
+                                    e.target.innerText = 주변지뢰;   
+                                }
+                                if(칸들[i+1][j-1] === "X") {
+                                    주변지뢰++;
+                                    e.target.innerText = 주변지뢰; 
+                                }
+                                // 주변에 지뢰가 없을경우 자동열기
+                                if(주변지뢰 === 0) {
+                                    //지뢰가 나오기 전 까지 계속 연다
+                                    if(j !== 9) {
+                                        document.getElementsByClassName(String(i)+String(j+1))[0].click();
+                                        document.getElementsByClassName(String(i+1)+String(j+1))[0].click();
+                                    }
+                                    if (j !== 0) {
+                                        document.getElementsByClassName(String(i)+String(j-1))[0].click();
+                                        document.getElementsByClassName(String(i+1)+String(j-1))[0].click();
+                                    }
+                                    if (i !== 9) {
+                                        document.getElementsByClassName(String(i+1)+String(j))[0].click();
+                                    }
+                                    document.getElementsByClassName(String(i)+String(j))[0].click();
+                                }
+                                // 블록이 맨 위와 맨 아래가 아닌경우
+                                } else if (i !== 0 && i !== 9 && j !== 0 && j !== 9) {
+                                    if(칸들[i+1][j] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    if(칸들[i][j+1] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    if(칸들[i+1][j+1] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    if(칸들[i-1][j] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    if(칸들[i-1][j-1] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    if(칸들[i][j-1] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    if(칸들[i+1][j-1] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    if(칸들[i-1][j+1] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    // 주변에 지뢰가 없을경우 자동열기
+                                    if(주변지뢰 === 0) {
+                                        //지뢰가 나오기 전 까지 계속 연다
+                                        document.getElementsByClassName(String(i+1)+String(j+1))[0].click();
+                                        document.getElementsByClassName(String(i+1)+String(j))[0].click();
+                                        document.getElementsByClassName(String(i+1)+String(j-1))[0].click();
+                                        document.getElementsByClassName(String(i)+String(j+1))[0].click();
+                                        document.getElementsByClassName(String(i)+String(j))[0].click();
+                                        document.getElementsByClassName(String(i)+String(j-1))[0].click();
+                                        document.getElementsByClassName(String(i-1)+String(j+1))[0].click();
+                                        document.getElementsByClassName(String(i-1)+String(j))[0].click();
+                                        document.getElementsByClassName(String(i-1)+String(j-1))[0].click();
+                                    }
+                                } else if (i === 9) {
+                                    // 맨 아랫줄인 경우
+                                    if(칸들[i][j+1] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    if(칸들[i-1][j] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    if(칸들[i-1][j-1] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    if(칸들[i][j-1] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    if(칸들[i-1][j+1] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    // 주변에 지뢰가 없을경우 자동열기
+                                    if(주변지뢰 === 0) {
+                                        // 지뢰가 나오기 전 까지 계속 연다
+                                        if(j !== 9) {
+                                            document.getElementsByClassName(String(i-1)+String(j+1))[0].click();
+                                            document.getElementsByClassName(String(i)+String(j+1))[0].click();
+                                        }
+                                        if(j !== 0) {
+                                            document.getElementsByClassName(String(i-1)+String(j-1))[0].click();
+                                            document.getElementsByClassName(String(i)+String(j-1))[0].click();
+                                        }
+                                        document.getElementsByClassName(String(i-1)+String(j))[0].click();
+                                        document.getElementsByClassName(String(i)+String(j))[0].click();
+                                    }
+                                } else if (j === 0 && i !== 0 && i !== 9) {
+                                    // 맨 왼쪽인 경우
+                                    if(칸들[i+1][j] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    if(칸들[i][j+1] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    if(칸들[i+1][j+1] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    if(칸들[i-1][j] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    if(칸들[i-1][j+1] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    // 주변에 지뢰가 없을경우 자동열기
+                                    if(주변지뢰 === 0) {
+                                        //지뢰가 나오기 전 까지 계속 연다
+                                        if( i !== 0) {
+                                            document.getElementsByClassName(String(i-1)+String(j))[0].click();
+                                            document.getElementsByClassName(String(i-1)+String(j+1))[0].click();
+                                        }
+                                        if( i !== 9) {
+                                            document.getElementsByClassName(String(i+1)+String(j+1))[0].click();
+                                            document.getElementsByClassName(String(i+1)+String(j))[0].click();
+                                        }
+                                        document.getElementsByClassName(String(i)+String(j+1))[0].click();
+                                        document.getElementsByClassName(String(i)+String(j))[0].click();
+                                    }
+                                } else if (j === 9 && i !== 0 && i !== 9) {
+                                    // 가장 오른쪽일 때
+                                    if(칸들[i+1][j] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    if(칸들[i-1][j] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    if(칸들[i-1][j-1] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    if(칸들[i][j-1] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    if(칸들[i+1][j-1] === "X") {
+                                        주변지뢰++;
+                                        e.target.innerText = 주변지뢰;   
+                                    }
+                                    // 주변에 지뢰가 없을경우 자동열기
+                                    if(주변지뢰 === 0) {
+                                        //지뢰가 나오기 전 까지 계속 연다
+                                        document.getElementsByClassName(String(i+1)+String(j))[0].click();
+                                        document.getElementsByClassName(String(i+1)+String(j-1))[0].click();
+                                        document.getElementsByClassName(String(i)+String(j))[0].click();
+                                        document.getElementsByClassName(String(i)+String(j-1))[0].click();
+                                        document.getElementsByClassName(String(i-1)+String(j))[0].click();
+                                        document.getElementsByClassName(String(i-1)+String(j-1))[0].click();
+                                    }
+                                }
+                                
+                                주변지뢰 = 0;
+                                정답카운트++;
+                                // 모두 열었을 때
+                                if(정답카운트 === (가로*세로-지뢰)) {
+                                    alert('승리!');
+                                }
+                                // 정상인 곳을 한 번더 클릭했을 때
+                            } else if(칸들[i][j] === 1) {
+                                return;
+                            }
+                        })
+                        줄.appendChild(칸);
+                    }
+                    테이블.appendChild(줄);
+                }
+                게임판.appendChild(테이블);
+                테이블.classList.add('칸들');
+            } else if (!전원) {
+                // 종료할 때
+                테이블.innerHTML = '';
+                정답카운트 = 0;
+                지뢰카운트 = 0;
+                칸들 = [];
+                칸들2 = [];
+                지뢰뽑기 = [];
+                십의자리 = [];
+                일의자리 = [];
+                console.clear();
+            }
+            시작상태 = !시작상태
+            시작버튼.innerText= (시작상태 ? '게임종료' : '게임시작!');
+        }
+        // 가로 세로 길이 지뢰 개수 변경 
+        const 가로변경 = (e) => {
+            가로 = e;
+        }
+        const 세로변경 = (e) => {
+            세로 = e;
+        }
+        const 지뢰변경 = (e) => {
+            지뢰 = e;
+        }
+    </script>
+</body>
+</html>
